@@ -1,0 +1,216 @@
+<?xml version="1.0"?>
+<robot name="my_robot">
+  <!-- Base footprint -->
+  <link name="base_footprint">
+    <visual>
+      <geometry>
+        <sphere radius="0.001"/>
+      </geometry>
+    </visual>
+    <collision>
+      <geometry>
+        <sphere radius="0.001"/>
+      </geometry>
+    </collision>
+  </link>
+
+  <!-- Base link: Cylinder (diameter 0.5 m, height 0.3 m) -->
+  <link name="base_link">
+    <visual>
+      <geometry>
+        <cylinder radius="0.25" length="0.3"/>
+      </geometry>
+      <material name="blue">
+        <color rgba="0 0 1 1"/>
+      </material>
+    </visual>
+    <collision>
+      <geometry>
+        <cylinder radius="0.25" length="0.3"/>
+      </geometry>
+    </collision>
+    <inertial>
+      <mass value="15.0"/>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <inertia ixx="0.346875" ixy="0.0" ixz="0.0" iyy="0.346875" iyz="0.0" izz="0.46875"/>
+    </inertial>
+  </link>
+
+  <!-- Left wheel (radius = 0.025 m) -->
+  <link name="left_wheel">
+    <visual>
+      <origin rpy="1.5708 0 0"/>
+      <geometry>
+        <cylinder radius="0.025" length="0.02"/>
+      </geometry>
+      <material name="red">
+        <color rgba="1 0 0 1"/>
+      </material>
+    </visual>
+    <collision>
+      <origin rpy="1.5708 0 0"/>
+      <geometry>
+        <cylinder radius="0.025" length="0.02"/>
+      </geometry>
+    </collision>
+    <inertial>
+      <mass value="3.0"/>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <inertia ixx="0.00056875" ixy="0" ixz="0" iyy="0.0009375" iyz="0" izz="0.00056875"/>
+    </inertial>
+  </link>
+
+  <!-- Right wheel (radius = 0.025 m) -->
+  <link name="right_wheel">
+    <visual>
+      <origin rpy="1.5708 0 0"/>
+      <geometry>
+        <cylinder radius="0.025" length="0.02"/>
+      </geometry>
+      <material name="red">
+        <color rgba="1 0 0 1"/>
+      </material>
+    </visual>
+    <collision>
+      <origin rpy="1.5708 0 0"/>
+      <geometry>
+        <cylinder radius="0.025" length="0.02"/>
+      </geometry>
+    </collision>
+    <inertial>
+      <mass value="3.0"/>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <inertia ixx="0.00056875" ixy="0" ixz="0" iyy="0.0009375" iyz="0" izz="0.00056875"/>
+    </inertial>
+  </link>
+
+  <!-- Front caster wheel (radius = 0.025 m) -->
+  <link name="front_caster">
+    <visual>
+      <geometry>
+        <sphere radius="0.025"/>
+      </geometry>
+      <material name="grey">
+        <color rgba="0.5 0.5 0.5 1"/>
+      </material>
+    </visual>
+    <collision>
+      <geometry>
+        <sphere radius="0.025"/>
+      </geometry>
+      <!-- Gazebo-specific friction parameters set to 0.0 -->
+      <surface>
+        <friction>
+          <ode>
+            <mu>0.0</mu>
+            <mu2>0.0</mu2>
+          </ode>
+        </friction>
+      </surface>
+    </collision>
+    <inertial>
+      <mass value="2.0"/>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <inertia ixx="0.00032917" ixy="0" ixz="0" iyy="0.000625" iyz="0" izz="0.00032917"/>
+    </inertial>
+  </link>
+
+  <!-- Back caster wheel (radius = 0.025 m) -->
+  <link name="back_caster">
+    <visual>
+      <geometry>
+        <sphere radius="0.025"/>
+      </geometry>
+      <material name="grey">
+        <color rgba="0.5 0.5 0.5 1"/>
+      </material>
+    </visual>
+    <collision>
+      <geometry>
+        <sphere radius="0.025"/>
+      </geometry>
+      <surface>
+        <friction>
+          <ode>
+            <mu>0.0</mu>
+            <mu2>0.0</mu2>
+          </ode>
+        </friction>
+      </surface>
+    </collision>
+    <inertial>
+      <mass value="2.0"/>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <inertia ixx="0.00032917" ixy="0" ixz="0" iyy="0.000625" iyz="0" izz="0.00032917"/>
+    </inertial>
+  </link>
+
+  <!-- Front laser scanner -->
+  <link name="front_laser">
+    <visual>
+      <geometry>
+        <cylinder radius="0.04" length="0.05"/>
+      </geometry>
+      <material name="black">
+        <color rgba="0 0 0 1"/>
+      </material>
+    </visual>
+    <collision>
+      <geometry>
+        <cylinder radius="0.04" length="0.05"/>
+      </geometry>
+    </collision>
+    <inertial>
+      <mass value="1.0"/>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <!-- For a cylinder with r=0.04, l=0.05, m=1.0: Ixx=Iyy=(1/12)*1.0*(3*0.04^2+0.05^2)=0.000483, Izz=1/2*1.0*0.04^2=0.0008 -->
+      <inertia ixx="0.000483" ixy="0" ixz="0" iyy="0.000483" iyz="0" izz="0.0008"/>
+    </inertial>
+  </link>
+
+  <!-- Joints -->
+  <!-- Base footprint to base_link joint -->
+  <joint name="base_footprint_joint" type="fixed">
+    <parent link="base_footprint"/>
+    <child link="base_link"/>
+    <origin xyz="0 0 0.15" rpy="0 0 0"/>
+  </joint>
+
+  <!-- Left wheel joint -->
+  <joint name="left_wheel_joint" type="continuous">
+    <parent link="base_link"/>
+    <child link="left_wheel"/>
+    <origin xyz="0 0.2 -0.15" rpy="0 0 0"/>
+    <axis xyz="0 1 0"/>
+  </joint>
+
+  <!-- Right wheel joint -->
+  <joint name="right_wheel_joint" type="continuous">
+    <parent link="base_link"/>
+    <child link="right_wheel"/>
+    <origin xyz="0 -0.2 -0.15" rpy="0 0 0"/>
+    <axis xyz="0 1 0"/>
+  </joint>
+
+  <!-- Front caster wheel joint -->
+  <joint name="front_caster_joint" type="fixed">
+    <parent link="base_link"/>
+    <child link="front_caster"/>
+    <origin xyz="0.1 0.0 -0.15" rpy="0 0 0"/>
+  </joint>
+
+  <!-- Back caster wheel joint -->
+  <joint name="back_caster_joint" type="fixed">
+    <parent link="base_link"/>
+    <child link="back_caster"/>
+    <origin xyz="-0.1 0.0 -0.15" rpy="0 0 0"/>
+  </joint>
+
+  <!-- Front laser joint -->
+  <joint name="front_laser_joint" type="fixed">
+    <parent link="base_link"/>
+    <child link="front_laser"/>
+    <origin xyz="0.25 0.0 0.075" rpy="3.14159 0 0"/>
+  </joint>
+
+</robot>
