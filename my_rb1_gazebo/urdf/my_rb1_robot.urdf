@@ -32,6 +32,7 @@
     <inertial>
       <mass value="15.0"/>
       <origin xyz="0 0 0" rpy="0 0 0"/>
+      <!-- For a solid cylinder: Ixx = Iyy = 1/12*m*(3r^2+h^2), Izz=1/2*m*r^2 -->
       <inertia ixx="0.346875" ixy="0.0" ixz="0.0" iyy="0.346875" iyz="0.0" izz="0.46875"/>
     </inertial>
   </link>
@@ -57,6 +58,16 @@
       <geometry>
         <cylinder radius="0.025" length="0.02"/>
       </geometry>
+      <surface>
+        <friction>
+          <ode>
+            <mu>1.0</mu>
+            <mu2>1.0</mu2>
+            <slip1>0.0</slip1>
+            <slip2>0.0</slip2>
+          </ode>
+        </friction>
+      </surface>
     </collision>
     <inertial>
       <mass value="3.0"/>
@@ -68,6 +79,12 @@
   <!-- Gazebo color for left wheel -->
   <gazebo reference="left_wheel">
     <material>Gazebo/Red</material>
+    <mu1>0.8</mu1>
+    <mu2>0.8</mu2>
+    <kp>500000.0</kp>
+    <kd>10.0</kd>
+    <minDepth>0.001</minDepth>
+    <maxVel>0.1</maxVel>
   </gazebo>
 
   <!-- Right wheel (radius = 0.025 m) -->
@@ -86,6 +103,16 @@
       <geometry>
         <cylinder radius="0.025" length="0.02"/>
       </geometry>
+      <surface>
+        <friction>
+          <ode>
+            <mu>1.0</mu>
+            <mu2>1.0</mu2>
+            <slip1>0.0</slip1>
+            <slip2>0.0</slip2>
+          </ode>
+        </friction>
+      </surface>
     </collision>
     <inertial>
       <mass value="3.0"/>
@@ -97,6 +124,12 @@
   <!-- Gazebo color for right wheel -->
   <gazebo reference="right_wheel">
     <material>Gazebo/Red</material>
+    <mu1>0.8</mu1>
+    <mu2>0.8</mu2>
+    <kp>500000.0</kp>
+    <kd>10.0</kd>
+    <minDepth>0.001</minDepth>
+    <maxVel>0.1</maxVel>
   </gazebo>
 
   <!-- Front caster wheel (radius = 0.025 m) -->
@@ -113,7 +146,7 @@
       <geometry>
         <sphere radius="0.025"/>
       </geometry>
-      <!-- Gazebo-specific friction parameters set to 0.0 -->
+      <!-- Set friction to 0.0 as required -->
       <surface>
         <friction>
           <ode>
@@ -124,15 +157,18 @@
       </surface>
     </collision>
     <inertial>
+      <!-- Revised inertial: For a solid sphere with mass=2.0 and radius=0.025, I = (2/5)*m*r^2 -->
       <mass value="2.0"/>
       <origin xyz="0 0 0" rpy="0 0 0"/>
-      <inertia ixx="0.00032917" ixy="0" ixz="0" iyy="0.000625" iyz="0" izz="0.00032917"/>
+      <inertia ixx="0.0005" ixy="0" ixz="0" iyy="0.0005" iyz="0" izz="0.0005"/>
     </inertial>
   </link>
 
   <!-- Gazebo color for front caster -->
   <gazebo reference="front_caster">
     <material>Gazebo/Grey</material>
+    <mu1>0.0</mu1>
+    <mu2>0.0</mu2>
   </gazebo>
 
   <!-- Back caster wheel (radius = 0.025 m) -->
@@ -159,15 +195,18 @@
       </surface>
     </collision>
     <inertial>
+      <!-- Revised inertial same as front caster -->
       <mass value="2.0"/>
       <origin xyz="0 0 0" rpy="0 0 0"/>
-      <inertia ixx="0.00032917" ixy="0" ixz="0" iyy="0.000625" iyz="0" izz="0.00032917"/>
+      <inertia ixx="0.0005" ixy="0" ixz="0" iyy="0.0005" iyz="0" izz="0.0005"/>
     </inertial>
   </link>
 
   <!-- Gazebo color for back caster -->
   <gazebo reference="back_caster">
     <material>Gazebo/Grey</material>
+    <mu1>0.0</mu1>
+    <mu2>0.0</mu2>
   </gazebo>
 
   <!-- Front laser scanner -->
@@ -188,8 +227,8 @@
     <inertial>
       <mass value="1.0"/>
       <origin xyz="0 0 0" rpy="0 0 0"/>
-      <!-- For a cylinder with r=0.04, l=0.05, m=1.0: Ixx=Iyy=(1/12)*1.0*(3*0.04^2+0.05^2)=0.000483, Izz=1/2*1.0*0.04^2=0.0008 -->
-      <inertia ixx="0.000483" ixy="0" ixz="0" iyy="0.000483" iyz="0" izz="0.0008"/>
+      <!-- Revised using standard formula: Ixx=Iyy = (1/12)*(3r^2+l^2), Izz = 1/2*r^2 -->
+      <inertia ixx="0.00060833" ixy="0" ixz="0" iyy="0.00060833" iyz="0" izz="0.0008"/>
     </inertial>
   </link>
 
@@ -212,6 +251,8 @@
     <child link="left_wheel"/>
     <origin xyz="0 0.2 -0.15" rpy="0 0 0"/>
     <axis xyz="0 1 0"/>
+    <!-- Adjust dynamics as necessary -->
+    <dynamics damping="0.1" friction="0.1"/>
   </joint>
 
   <!-- Right wheel joint -->
@@ -220,20 +261,21 @@
     <child link="right_wheel"/>
     <origin xyz="0 -0.2 -0.15" rpy="0 0 0"/>
     <axis xyz="0 1 0"/>
+    <dynamics damping="0.1" friction="0.1"/>
   </joint>
 
   <!-- Front caster wheel joint -->
   <joint name="front_caster_joint" type="fixed">
     <parent link="base_link"/>
     <child link="front_caster"/>
-    <origin xyz="0.1 0.0 -0.15" rpy="0 0 0"/>
+    <origin xyz="0.1 0.0 -0.125" rpy="0 0 0"/>
   </joint>
 
   <!-- Back caster wheel joint -->
   <joint name="back_caster_joint" type="fixed">
     <parent link="base_link"/>
     <child link="back_caster"/>
-    <origin xyz="-0.1 0.0 -0.15" rpy="0 0 0"/>
+    <origin xyz="-0.1 0.0 -0.125" rpy="0 0 0"/>
   </joint>
 
   <!-- Front laser joint -->
@@ -246,7 +288,7 @@
   <!-- Gazebo plugins -->
   <gazebo>
     <plugin name="differential_drive_controller" filename="libgazebo_ros_diff_drive.so">
-      <robotNamespace>/my_robot</robotNamespace>
+      <robotNamespace>/</robotNamespace>
       <leftJoint>left_wheel_joint</leftJoint>
       <rightJoint>right_wheel_joint</rightJoint>
       <wheelSeparation>0.4</wheelSeparation>
@@ -262,6 +304,9 @@
       <updateRate>30</updateRate>
       <odometrySource>world</odometrySource>
       <publishTf>true</publishTf>
+      <torque>20</torque>
+      <maxVelocity>0.5</maxVelocity>
+      <rightWheelTorqueMult>1.05</rightWheelTorqueMult>
     </plugin>
   </gazebo>
   
