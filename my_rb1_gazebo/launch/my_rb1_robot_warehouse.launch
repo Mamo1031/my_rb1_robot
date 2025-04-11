@@ -20,7 +20,7 @@
 
         <!-- Run a python script to send a service call to gazebo_ros to spawn a URDF robot -->
         <node name="urdf_spawner" pkg="gazebo_ros" type="spawn_model" respawn="false" output="screen"
-                args="-urdf -model my_robot -param robot_description -x -0.4 -y -1.5 -z 0"/>
+                args="-urdf -model my_robot -param robot_description -x -0.4 -y -1.35 -z 0"/>
 
         <!-- Launch robot state publisher -->
         <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher" />
