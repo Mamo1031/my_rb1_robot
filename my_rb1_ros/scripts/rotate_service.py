@@ -28,41 +28,47 @@ class RotateRobotService:
         target_degrees = req.degrees
         target_radians = math.radians(target_degrees)
 
-        if target_degrees != 90 and target_degrees != -90:
-            rospy.logwarn("Invalid Input")
-            return RotateResponse(result="Invalid Input")
+        if target_degrees == 0:
+            rospy.logwarn("Zero rotation requested.")
+            return RotateResponse(result="No rotation needed.")
 
-        rospy.loginfo(f"Service Requested")
+        rospy.loginfo(f"Service Requested: rotate {target_degrees} degrees")
 
-        start_yaw = self.current_yaw
         twist = Twist()
         twist.linear.x = 0.0
-        twist.angular.z = 0.3 if target_radians > 0 else -0.3
+        twist.angular.z = 1.0 if target_radians > 0 else -1.0
 
         rate = rospy.Rate(10)
+
+        last_yaw = self.current_yaw
         turned_angle = 0.0
 
+        success = False
         while not rospy.is_shutdown():
             self.pub.publish(twist)
             rate.sleep()
 
-            # Calculate: difference between current yaw and start yaw
-            delta_yaw = self.current_yaw - start_yaw
-
-            # Normalize to range -pi ~ pi
+            # Calculate incremental rotation
+            delta_yaw = self.current_yaw - last_yaw
             delta_yaw = math.atan2(math.sin(delta_yaw), math.cos(delta_yaw))
-            turned_angle = delta_yaw
+            turned_angle += delta_yaw
+            last_yaw = self.current_yaw
 
             # Stop when the target rotation angle is reached
             if abs(turned_angle) >= abs(target_radians):
+                success = True
                 break
 
         # Stop rotation
         twist.angular.z = 0.0
         self.pub.publish(twist)
 
-        rospy.loginfo("Service Completed")
-        return RotateResponse(result="Rotation completed successfully!")
+        if success:
+            rospy.loginfo("Service Completed")
+            return RotateResponse(result="Rotation completed successfully!")
+        else:
+            rospy.logwarn("Rotation interrupted before completion")
+            return RotateResponse(result="Rotation interrupted or failed.")
 
 if __name__ == '__main__':
     RotateRobotService()
